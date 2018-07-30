@@ -165,8 +165,10 @@ def main():
 
                     for d in cd:
                         q.put(d)
-
-            assert(q.qsize() == len(expected_shares))
+            
+            # sometimes we get topics from /page/shares/ that aren't on /page/messages/
+            # maybe deleted ones?
+            assert(q.qsize() >= len(expected_shares))
 
             for i in range(num_threads):
                 t = Thread(target=scrape_topic, args=(s, url, q, folder, raw_folder))
@@ -177,7 +179,7 @@ def main():
 
             total_saved_html = len([name for name in os.listdir(folder) if name.endswith('.html')])
             print('Saved %d HTML pages' % total_saved_html)
-            assert(total_saved_html == total_topics)
+            assert(total_saved_html >= total_topics)
 
 if __name__ == '__main__':
     main()
